@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- jquery.js -->
+    <script src="./libs/jQuery/jquery.js"></script>
+    <!-- vue.min.js -->
+    <script src="./libs/Vue/vue.min.js"></script>
+    <!-- elementUI.min.js -->
+    <script src="./libs/elementUI/js/elementUI.min.js"></script>
+    <!-- elementUI.min.css -->
+    <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
+    <!-- index.css -->
+    <link rel="stylesheet" href="./styles/index.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="./styles/userAdd.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- 整体布局 -->
+            <el-container>
+                <!-- 右侧 -->
+                <el-container>
+                    <!-- 右侧头部 -->
+                    <el-header>
+                        <h2>欢迎您&emsp;admin</h2>
+                        <p>添加管理员账号</p>
+                    </el-header>
+                    <el-main>
+                        <el-row>
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>添加管理员账号</h3>
+                                </div>
+                                <div class="userAdd">
+                                    <!-- 添加账号的表单 -->
+                                    <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px"
+                                        class="demo-ruleForm">
+                                        <!-- 用户名 -->
+                                        <el-form-item label="用户名" prop="username">
+                                            <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
+                                        </el-form-item>
+                                        <!-- 密码 -->
+                                        <el-form-item label="密&emsp;码" prop="password">
+                                            <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+                                        </el-form-item>
+                                        <!-- 确认密码 -->
+                                        <el-form-item label="确认密码" prop="confirmPassword">
+                                            <el-input v-model="loginForm.confirmPassword"></el-input>
+                                        </el-form-item>
+                                        <!-- 选择用户组 -->
+                                        <el-form-item label="选择用户组" prop="group">
+                                            <el-select v-model="loginForm.group" placeholder="请选择用户组">
+                                                <el-option label="普通用户" value="普通用户"></el-option>
+                                                <el-option label="超级用户" value="超级用户"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <!-- 按钮 -->
+                                        <el-form-item>
+                                            <el-button type="primary" @click="submitForm('loginForm')">添加</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </el-card>
+                        </el-row>
+                    </el-main>
+                    <el-footer>
+                        <p>© Copyright 2018 华联超市管理系统</p>
+                    </el-footer>
+                </el-container>
+            </el-container>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                // 自定义验证规则函数
+                let checkPass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请再次输入密码！'));
+                    } else if (value.length < 6 || value.length > 16) {
+                        callback('密码长度必须在 6-16 位之间！');
+                    }
+                    else if (value !== this.loginForm.password) {
+                        callback(new Error('两次输入的密码不一致！'));
+                    } else {
+                        callback();
+                    }
+                }
+                return {
+                    loginForm: {
+                        username: '',
+                        password: '',
+                        confirmPassword: '',
+                        group: ''
+                    },
+                    rules: {
+                        // 用户名验证
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' },     // 为空验证
+                            { min: 3, max: 12, message: '用户名长度必须在 3-12 位之间！', trigger: 'blur' }    // 长度验证
+                        ],
+                        // 密码验证
+                        password: [
+                            { required: true, message: '请输入密码', trigger: 'blur' },
+                            { min: 6, max: 16, message: '密码长度必须在 6-16 位之间！', trigger: 'blur' }    // 长度验证
+                        ],
+                        // 再次输入密码验证
+                        confirmPassword: [
+                            { validator: checkPass, required: true, trigger: 'blur' }       // 自定义规则
+                        ],
+                        region: [
+                            { required: true, message: '请选择用户组', trigger: 'change' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        // 发起请求的数据
+                        const uesrData= {
+                            username: this.loginForm.username,
+                            password: this.loginForm.password,
+                            group: this.loginForm.group
+                        }
+
+                        if (valid) {
+                            // 发起ajax请求
+                            $.post('/users/userAdd', uesrData, function (data) {
+                                if (data.statusCode === 1) {
+                                    alert(data.msg);
+                                    location.href = './userList.html';
+                                } else {
+                                    alert(data.msg);
+                                }
+                            });
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

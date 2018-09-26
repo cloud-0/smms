@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>测试</title>
+    <!-- vue.min.js -->
+    <script src="./libs/Vue/vue.min.js"></script>
+    <!-- elementUI.min.js -->
+    <script src="./libs/elementUI/js/elementUI.min.js"></script>
+    <!-- elementUI.min.css -->
+    <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="./styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- 右侧 -->
+        <el-container>
+            <!-- 右侧头部 -->
+            <el-header>
+                <h2>欢迎您&emsp;admin</h2>
+                <p>查看系统的详细信息</p>
+            </el-header>
+            <el-main>
+                <el-row>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <h3>系统信息</h3>
+                        </div>
+                        <el-alert type="info" show-icon>
+                            sdsadasd
+                        </el-alert>
+                        <el-alert type="info" show-icon>
+                            asdasd
+                        </el-alert>
+                        <el-col :span="11">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>销售排行</h3>
+                                </div>
+                                <el-table :data="tableData" stripe style="width: 100%">
+                                    <el-table-column prop="name" label="商品名称">
+                                    </el-table-column>
+                                    <el-table-column prop="number" label="销量">
+                                    </el-table-column>
+                                    <el-table-column prop="date" label="时间">
+                                    </el-table-column>
+                                </el-table>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="12" :push="1">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>缺货的商品</h3>
+                                </div>
+                                <el-table :data="tableData" stripe style="width: 100%">
+                                    <el-table-column prop="name" label="商品名称">
+                                    </el-table-column>
+                                    <el-table-column prop="number" label="库存">
+                                    </el-table-column>
+                                    <el-table-column label="操作">
+                                        <template slot-scope="scope">
+                                            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-card>
+                        </el-col>
+                    </el-card>
+                </el-row>
+            </el-main>
+            <el-footer>
+                <p>© Copyright 2018 华联超市管理系统</p>
+            </el-footer>
+        </el-container>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    tableData: [{
+                        date: '2016-05-02',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-04',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1517 弄'
+                    }, {
+                        date: '2016-05-01',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1519 弄'
+                    }, {
+                        date: '2016-05-03',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1516 弄'
+                    }]
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

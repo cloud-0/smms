@@ -1,0 +1,185 @@
+.el-header, .el-footer {
+    color: #333;
+    text-align: center;
+}
+
+.el-aside {
+    background-color: #D3DCE6;
+    color: #333;
+    text-align: center;
+}
+
+.el-main {
+    color: #333;
+    text-align: center;
+}
+
+
+/* 自定义样式 */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#app {
+    height: 100%;
+}
+
+/* 左侧 */
+/* 标题样式 */
+#app .container {
+    height: 100%;
+}
+
+#app .el-container {
+    height: 100%;
+}
+
+.el-aside {
+    text-align: right;
+    background-image: url(../images/left_bg.png);
+    color: #ccc;
+}
+
+.el-aside .title {
+    font-size: 22px;
+    padding: 26px 0;
+    margin-right: 20px;
+}
+
+.el-aside p {
+    font-size: 14px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+.el-aside p a {
+    text-decoration: none;
+    color: #ccc;
+}
+
+.el-aside p a:hover {
+    color: #67c23a;
+}
+
+/* 导航样式 */
+.el-menu-vertical-demo, .el-submenu, .el-submenu__title {
+    border-right: none;
+    background: transparent;
+}
+
+.el-submenu {
+    width: 220px;
+    float: right;
+}
+
+.el-submenu__title {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    height: 32px;
+    line-height: 32px;
+    background-image: url(../images/menu_bg.png);
+    color: #fff;
+    margin-top: 10px;
+}
+
+.el-submenu__title i {
+    color: #fff;
+}
+
+.el-submenu__title span {
+    margin-right: 20px;
+}
+
+.el-menu-item-group__title {
+    padding: 0;
+}
+
+.el-menu {
+    background: transparent;
+}
+
+.el-submenu .el-menu-item {
+    height: 34px;
+    line-height: 34px;
+}
+
+.el-menu-item {
+    background: transparent;
+    color: rgb(177, 177, 177);
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    margin-top: 10px;
+}
+
+.el-menu-item:hover {
+    color: #000;
+    background: #fff;
+}
+
+.el-menu-item a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.el-menu-item a:hover {
+    color: #000;
+}
+
+/* 右侧头部 */
+.el-header {
+    padding: 20px 0;
+    height: 100px !important;
+    text-align: left;
+    padding-left: 30px;
+    background: none;
+}
+
+.el-header h2, .el-header p {
+    margin: 10px 0;
+    padding: 0;
+}
+
+/* 右侧主体标题 */
+.el-card__header {
+    text-align: left;
+    background-color: rgb(233, 233, 233);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.el-card__header h3 {
+    margin: 0px;
+    padding: 0;
+}
+
+/* 右侧主体 */
+.el-alert {
+    margin-bottom: 10px;
+    background: rgb(105, 161, 235, 0.4);
+    height: 40px;
+    line-height: 40px;
+    color: #333;
+}
+
+.el-alert__icon {
+    font-size: 14px;
+    color: blue;
+}
+.el-alert__icon.is-big {
+    font-size: 14px;
+}
+
+/* 主体表格 */
+.el-main {
+    text-align: left;
+}
+
+/* 右侧尾部 */
+.el-footer {
+    border-top: 1px solid #ccc;
+    height: 60px !important;
+    text-align: left;
+    font-size: 14px;
+}

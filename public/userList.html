@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- vue.min.js -->
+    <script src="./libs/Vue/vue.min.js"></script>
+    <!-- elementUI.min.js -->
+    <script src="./libs/elementUI/js/elementUI.min.js"></script>
+    <!-- elementUI.min.css -->
+    <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
+    <!-- index.css -->
+    <link rel="stylesheet" href="./styles/index.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="./styles/userList.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- 整体布局 -->
+            <el-container>
+                <!-- 右侧 -->
+                <el-container>
+                    <!-- 右侧头部 -->
+                    <el-header>
+                        <h2>欢迎您&emsp;admin</h2>
+                        <p>添加管理员账号</p>
+                    </el-header>
+                    <el-main>
+                        <el-row>
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>添加管理员账号</h3>
+                                </div>
+                                <el-tabs type="border-card">
+                                    <el-tab-pane label="账号管理">
+                                        <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
+                                            @selection-change="handleSelectionChange">
+                                            <el-table-column type="selection">
+                                            </el-table-column>
+                                            <el-table-column prop="name" label="用户名称">
+                                            </el-table-column>
+                                            <el-table-column prop="userGroup" label="用户组" show-overflow-tooltip>
+                                            </el-table-column>
+                                            <el-table-column label="日期">
+                                                <template slot-scope="scope">{{ scope.row.date }}</template>
+                                            </el-table-column>
+                                            <el-table-column label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </el-tab-pane>
+                                    <el-tab-pane label="添加账号"></el-tab-pane>
+                                    <el-tab-pane label="密码修改">密码修改</el-tab-pane>
+                                </el-tabs>
+                            </el-card>
+                        </el-row>
+                    </el-main>
+                    <el-footer>
+                        <p>© Copyright 2018 华联超市管理系统</p>
+                    </el-footer>
+                </el-container>
+            </el-container>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                // 自定义验证规则函数
+                let checkPass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请再次输入密码！'));
+                    } else if (value.length < 6 || value.length > 16) {
+                        callback('密码长度必须在 6-16 位之间！');
+                    }
+                    else if (value !== this.loginForm.password) {
+                        callback(new Error('两次输入的密码不一致！'));
+                    } else {
+                        callback();
+                    }
+                }
+                return {
+                    loginForm: {
+                        username: '',
+                        password: '',
+                        confirmPassword: '',
+                        region: ''
+                    },
+                    rules: {
+                        // 用户名验证
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' },     // 为空验证
+                            { min: 3, max: 12, message: '用户名长度必须在 3-12 位之间！', trigger: 'blur' }    // 长度验证
+                        ],
+                        // 密码验证
+                        password: [
+                            { required: true, message: '请输入密码', trigger: 'blur' },
+                            { min: 6, max: 16, message: '密码长度必须在 6-16 位之间！', trigger: 'blur' }    // 长度验证
+                        ],
+                        // 再次输入密码验证
+                        confirmPassword: [
+                            { validator: checkPass, required: true, trigger: 'blur' }       // 自定义规则
+                        ],
+                        region: [
+                            { required: true, message: '请选择用户组', trigger: 'change' }
+                        ]
+                    },
+                    tableData: [{
+                        date: '2016-05-03',
+                        name: 'admin',
+                        userGroup: '超级用户'
+                    },{
+                        date: '2016-05-03',
+                        name: 'admin',
+                        userGroup: '超级用户'
+                    },{
+                        date: '2016-05-03',
+                        name: 'admin',
+                        userGroup: '超级用户'
+                    }],
+                    multipleSelection: []
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
