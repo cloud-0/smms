@@ -114,8 +114,18 @@ html, body {
 }
 
 .el-menu-item:hover {
+    color: #409eff;
+    background: transparent;
+}
+
+.el-menu-item:visited {
     color: #000;
-    background: #fff;
+    background: transparent;
+}
+
+.el-menu-item.is-active {
+    background-color: transparent;
+    color: #409eff;
 }
 
 .el-menu-item a {
@@ -124,7 +134,7 @@ html, body {
 }
 
 .el-menu-item a:hover {
-    color: #000;
+    color: #409eff;
 }
 
 /* 右侧头部 */
