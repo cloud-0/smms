@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
     <!-- 自定义css -->
     <link rel="stylesheet" href="./styles/index.css">
+    <!-- 根据cookie检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
 
 <body>
@@ -25,10 +27,10 @@
                 <el-aside width="230px">
                     <h2 class="title">华联超市管理系统</h2>
                     <p>欢迎您，admin</p>
-                    <p><a href="">管理首页</a> | <a href="">退出系统</a></p>
+                    <p><a href="">管理首页</a> | <a href="/users/logout">退出系统</a></p>
                     <!-- 侧边导航 -->
-                    <el-menu default-active="2" :unique-opened="true" :default-openeds="['1']" :default-active="'1-1'" class="el-menu-vertical-demo" @open="handleOpen"
-                        @close="handleClose">
+                    <el-menu default-active="2" :unique-opened="true" :default-openeds="['1']" :default-active="'1-1'" class="el-menu-vertical-demo"
+                      >
                         <el-submenu index="1">
                             <template slot="title">
                                 <span>系统管理</span>

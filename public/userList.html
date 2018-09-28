@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="./styles/index.css">
     <!-- 自定义css -->
     <link rel="stylesheet" href="./styles/userList.css">
+    <!-- 根据cookie检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
 </head>
 
 <body>
@@ -53,11 +55,16 @@
                                     </el-table-column>
                                     <el-table-column label="操作">
                                         <template slot-scope="scope">
-                                            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                            <el-button size="mini" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
                                             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
                                         </template>
                                     </el-table-column>
+
                                 </el-table>
+                                <div style="margin-top: 20px; text-align: left;">
+                                    <el-button @click="batchDel()">批量删除</el-button>
+                                    <el-button @click="cancelSelection()">取消选择</el-button>
+                                </div>
                             </el-card>
                         </el-row>
                     </el-main>
@@ -77,12 +84,13 @@
                     tableData: [],
                     multipleSelection: []
                 }
-            }, 
+            },
             // 生命周期
             created() {
                 this.getAllData();
             },
             methods: {
+                // 请求所有数据
                 getAllData() {
                     // 保留当前this，因为jQuery内的this指向jQuery本身
                     var _this = this;
@@ -92,9 +100,12 @@
                         _this.tableData = data;
                     });
                 },
-                handleEdit(index, row) {
-                    console.log(index, row);
+                // 修改数据
+                handleEdit(id) {
+                    // 跳转到修改用户账号页面并传递一个id
+                    location.href = `./userEdit.html?id=${id}`;
                 },
+                // 单条数据删除
                 handleDelete(id) {
                     // 保留当前this
                     var _this = this;
@@ -111,9 +122,42 @@
                         }
                     });
                 },
+                // 批量删除
+                batchDel() {
+                    // 遍历选中的数据对象数组，返回一个id数组
+                    let idArr = this.multipleSelection.map(v => v.id);
+                    // 没有选择的情况下点击批量删除
+                    if (!idArr.length) {
+                        // 弹出提示信息
+                        alert('请至少选择一个账号！');
+                        // 阻止后面程序执行
+                        return;
+                    }
+                    // 保留当前this
+                    var _this = this;
+                    // 发起ajax请求,把id数组作为数据传给后台
+                    $.get('/users/batchDel', {idArr}, function (data) {
+                        if (data.statusCode === 1) {
+                            // 弹出成功的提示
+                            alert(data.msg);
+                            // 刷新页面（请求一次所有数据）
+                            _this.getAllData();
+                        } else {
+                            // 弹出失败的提示
+                            alert(data.msg);
+                        }
+                    });
+                },
+                
+                // 状态改变时执行的方法
                 handleSelectionChange(val) {
+                    // 获取到选中的数据对象数组
                     this.multipleSelection = val;
                 },
+                // 取消选中
+                cancelSelection() {
+                    this.$refs.multipleTable.clearSelection();
+                }
             },
             filters: {
                 // 时间过滤器
