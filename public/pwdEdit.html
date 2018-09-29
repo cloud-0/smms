@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- jquery.js -->
+    <script src="./libs/jQuery/jquery.js"></script>
+    <!-- vue.min.js -->
+    <script src="./libs/Vue/vue.min.js"></script>
+    <!-- elementUI.min.js -->
+    <script src="./libs/elementUI/js/elementUI.min.js"></script>
+    <!-- elementUI.min.css -->
+    <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
+    <!-- index.css -->
+    <link rel="stylesheet" href="./styles/index.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="./styles/userAdd.css">
+    <!-- 根据cookie检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- 整体布局 -->
+            <el-container>
+                <!-- 右侧 -->
+                <el-container>
+                    <!-- 右侧头部 -->
+                    <el-header>
+                        <h2>欢迎您&emsp;admin</h2>
+                        <p>账号密码修改</p>
+                    </el-header>
+                    <el-main>
+                        <el-row>
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>账号密码修改</h3>
+                                </div>
+                                <div class="userAdd">
+                                    <!-- 添加账号的表单 -->
+                                    <el-form :model="pwdEditForm" status-icon :rules="rules" ref="pwdEditForm" label-width="100px"
+                                        class="demo-ruleForm">
+                                        <!-- 用户名 -->
+                                        <el-form-item label="原密码" prop="oldPwd">
+                                            <el-input type="password" v-model="pwdEditForm.oldPwd" autocomplete="off"></el-input>
+                                        </el-form-item>
+                                        <!-- 密码 -->
+                                        <el-form-item label="新密码" prop="newPwd">
+                                            <el-input type="password" v-model="pwdEditForm.newPwd" autocomplete="off"></el-input>
+                                        </el-form-item>
+                                        <!-- 确认密码 -->
+                                        <el-form-item label="确认密码" prop="confirmPassword">
+                                            <el-input type="password" v-model="pwdEditForm.confirmPassword"></el-input>
+                                        </el-form-item>
+                                        <!-- 按钮 -->
+                                        <el-form-item>
+                                            <el-button type="primary" @click="submitForm('pwdEditForm')">确认</el-button>
+                                            <el-button @click="resetForm('pwdEditForm')">取消</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </el-card>
+                        </el-row>
+                    </el-main>
+                    <el-footer>
+                        <p>© Copyright 2018 华联超市管理系统</p>
+                    </el-footer>
+                </el-container>
+            </el-container>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+
+                // 原密码的验证（是否存在）
+                let oldPwdEdit = (rule, value, callback) => {
+                    // 获取原密码
+                    let oldPwdObj = {
+                        oldPwd: this.pwdEditForm.oldPwd
+                    };
+                    // 发起ajax请求
+                    $.post('/users/checkoldpwd', oldPwdObj, function (data) {
+                        if (data.statusCode === 0 ) {
+                            callback(new Error(data.msg));
+                        } else {
+                            callback();
+                        }
+                    });
+                }
+
+                // 自定义验证规则函数
+                let checkPass = (rule, value, callback) => {
+                    // 如果为空时
+                    if (value === '') {
+                        callback(new Error('请再次输入密码！'));
+                        // 长度不在6-16位之间时
+                    } else if (value.length < 6 || value.length > 16) {
+                        callback('密码长度必须在 6-16 位之间！');
+                    }
+                    // 第二次输入的密码不等于前一次输入的密码时
+                    else if (value !== this.pwdEditForm.newPwd) {
+                        callback(new Error('两次输入的密码不一致！'));
+                    } else {
+                        callback();
+                    }
+                }
+                return {
+                    pwdEditForm: {
+                        oldPwd: '',
+                        newPwd: '',
+                        confirmPassword: ''
+                    },
+                    rules: {
+                        // 原密码验证
+                        oldPwd: [
+                            { validator: oldPwdEdit, required: true, trigger: 'blur' },     // 为空验证
+                        ],
+                        // 密码验证
+                        newPwd: [
+                            { required: true, message: '请输入密码', trigger: 'blur' },
+                            { min: 6, max: 16, message: '密码长度必须在 6-16 位之间！', trigger: 'blur' }    // 长度验证
+                        ],
+                        // 再次输入密码验证
+                        confirmPassword: [
+                            { validator: checkPass, required: true, trigger: 'blur' }       // 自定义规则
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        // 发起请求的数据(新密码)
+                        const pwdData= {
+                            newPwd : this.pwdEditForm.newPwd,
+                        }
+
+                        if (valid) {
+                            // 发起ajax请求
+                            $.post('/users/savepwdedit', pwdData, function (data) {
+                               if (data.statusCode === 1) {
+                                    // 弹出提示信息
+                                    alert(data.msg);
+                                    // 跳转到登录页面
+                                    window.top.location.href = "./login.html";
+                               }
+                            });
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

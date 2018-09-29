@@ -59,8 +59,18 @@
                                             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
                                         </template>
                                     </el-table-column>
-
                                 </el-table>
+                                <div style="margin-top: 20px; text-align: left;">
+                                    <el-pagination 
+                                    @size-change="handleSizeChange" 
+                                    @current-change="handleCurrentChange"
+                                        :current-page="currentPage" 
+                                        :page-sizes="[1, 2, 5, 10, 20]" 
+                                        :page-size="pageSize"
+                                        layout="total, sizes, prev, pager, next, jumper" 
+                                        :total="totalData">
+                                    </el-pagination>
+                                </div>
                                 <div style="margin-top: 20px; text-align: left;">
                                     <el-button @click="batchDel()">批量删除</el-button>
                                     <el-button @click="cancelSelection()">取消选择</el-button>
@@ -78,33 +88,49 @@
 
     <script>
         new Vue({
+            // 挂载dom
             el: '#app',
+            // 数据
             data() {
                 return {
                     tableData: [],
-                    multipleSelection: []
+                    multipleSelection: [],
+                    pageSize: 2,
+                    currentPage: 1,
+                    totalData: 1
                 }
             },
             // 生命周期
             created() {
                 this.getAllData();
             },
+            // 方法
             methods: {
                 // 请求所有数据
                 getAllData() {
                     // 保留当前this，因为jQuery内的this指向jQuery本身
                     var _this = this;
-                    // 在挂载dom之间发起ajax请求(刷新页面)
-                    $.get('/users/userList', function (data) {
-                        // 把后台响应的数据添加到双向绑定数据的数组中
-                        _this.tableData = data;
+                    // 获取到当前页码和每页显示数据量的字段
+                    const pagingData = {
+                        pageSize : this.pageSize,
+                        currentPage : this.currentPage
+                    }
+                    // 在挂载dom之前发起ajax请求(刷新页面)
+                    $.get('/users/userList', pagingData, function (data) {
+
+                        // 返回到数据总量赋值给vue实例的总数据量字段totalData
+                        _this.totalData = data.totalData;
+                        // 每页显示显示的数据
+                        _this.tableData = data.pageData;
                     });
                 },
+                
                 // 修改数据
                 handleEdit(id) {
                     // 跳转到修改用户账号页面并传递一个id
                     location.href = `./userEdit.html?id=${id}`;
                 },
+                
                 // 单条数据删除
                 handleDelete(id) {
                     // 保留当前this
@@ -122,6 +148,7 @@
                         }
                     });
                 },
+                
                 // 批量删除
                 batchDel() {
                     // 遍历选中的数据对象数组，返回一个id数组
@@ -136,7 +163,7 @@
                     // 保留当前this
                     var _this = this;
                     // 发起ajax请求,把id数组作为数据传给后台
-                    $.get('/users/batchDel', {idArr}, function (data) {
+                    $.get('/users/batchDel', { idArr }, function (data) {
                         if (data.statusCode === 1) {
                             // 弹出成功的提示
                             alert(data.msg);
@@ -148,17 +175,35 @@
                         }
                     });
                 },
-                
+
                 // 状态改变时执行的方法
                 handleSelectionChange(val) {
                     // 获取到选中的数据对象数组
                     this.multipleSelection = val;
                 },
+                
                 // 取消选中
                 cancelSelection() {
                     this.$refs.multipleTable.clearSelection();
+                },
+                
+                // 每页显示数据的数量改变时触发
+                handleSizeChange(val) {
+                    // 每次改变时的值赋值给pageSize
+                    this.pageSize = val;
+                    // 每次改变每页显示数量的数量时请求一次数据（更新页面）
+                    this.getAllData();
+                },
+                
+                // 当前页码改变时触发
+                handleCurrentChange(val) {
+                    // 每次改变时把值赋值给currentPage
+                    this.currentPage = val;
+                    // 每当页码改变时就请求一次数据（更新页面）
+                    this.getAllData();
                 }
             },
+            // 过滤器
             filters: {
                 // 时间过滤器
                 formatDate(value) {

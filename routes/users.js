@@ -23,7 +23,7 @@ router.post('/checklogin', (req, res) => {
       if (data.length) {
         // 设置cookie
         res.cookie('username', data[0].username);
-        res.cookie('password', data[0].password);
+        res.cookie('userId', data[0].id);
         res.cookie('group', data[0].groups);
         res.send({ "statusCode": 1, "msg": "登录成功！" });
       } else {
@@ -43,6 +43,51 @@ router.get('/checkIsLogin', (req, res) => {
   } else {
     res.send('alert("请先登录，嘿嘿！"); location.href="./login.html";');
   }
+});
+
+/* 响应原密码验证的请求 */
+router.post('/checkoldpwd', (req, res) => {
+  // 接收前端数据（输入的原密码）
+  let { oldPwd } = req.body;
+  // 获取id
+  let id = req.cookies.userId;
+  // 定义sql语句（根据id查询数据库中的原密码）
+  const selectSql = `select * from users where id=${id}`;
+  // 执行sql语句
+  connection.query(selectSql, (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      if (data[0].password === oldPwd) {
+        res.send({ "statusCode": 1 });
+      } else {
+        res.send({ "statusCode": 0, "msg": "密码输入错误！" });
+      }
+    }
+  });
+});
+
+/* 响应密码修改确认的请求 */
+router.post('/savepwdedit', (req, res) => {
+  // 接收数据（新密码）
+  let { newPwd } = req.body;
+  // 获取cookie的Id
+  let id = req.cookies.userId;
+  // 定义sql语句(根据id更新数据库中的密码)
+  let updateSql = `update users set password='${newPwd}' where id=${id}`;
+  // 执行sql语句
+  connection.query(updateSql, (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      // 清除cookie
+      res.clearCookie('username');
+      res.clearCookie('userId');
+      res.clearCookie('group');
+      // 响应数据对象到前端
+      res.send({ "statusCode" : 1, "msg" : "修改成功！" });
+    }
+  });
 });
 
 /* 响应添加账号的请求*/
@@ -65,21 +110,38 @@ router.post('/userAdd', (req, res) => {
   });
 });
 
-/* 响应账号列表的请求 */
+/* 响应账号列表分页的请求 */
 router.get('/userList', (req, res) => {
+  // 接收数据（前端发送的当前页码和每页现实数据量）
+  let { pageSize, currentPage } = req.query;
   // 定义sql语句，查询所有数据
-  const selectSql = `select * from users order by dates desc`;
+  let selectSql = `select * from users`;
   // 执行sql语句
   connection.query(selectSql, (err, data) => {
     // 如果有错抛出错误
     if (err) {
       throw err;
     } else {    // 否则就执行以下逻辑
-      // 将查询到的所有数据响应给前端
-      res.send(data)
+      // 全部数据的总数量
+      let totalData = data.length;
+      // 计算跳过多少条数据
+      let n = (currentPage - 1) * pageSize;
+      // 拼接查询所有数据的sql语句，根据页码和每页数量查询数据并且根据时间排序
+      selectSql += ` order by dates desc limit ${n}, ${pageSize}`;
+      // 执行拼接后的sql语句（根据条件查询）
+      connection.query(selectSql, (err, data) => {
+        if (err) {
+          throw err;
+        } else {
+          // 响应给前端数据对象
+          res.send({"totalData": totalData, "pageData": data});
+        }
+      });
+      
     }
   });
 });
+
 
 /* 响应单条数据删除请求 */
 router.get('/userDelOne', (req, res) => {
