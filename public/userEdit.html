@@ -31,7 +31,7 @@
                 <el-container>
                     <!-- 右侧头部 -->
                     <el-header>
-                        <h2>欢迎您&emsp;admin</h2>
+                        <h2>欢迎您&emsp;{{username}}</h2>
                         <p>修改用户账号</p>
                     </el-header>
                     <el-main>
@@ -95,6 +95,7 @@
                     }
                 }
                 return {
+                    username: '',
                     editForm: {
                         username: '',
                         password: '',
@@ -129,7 +130,10 @@
                     _this.editForm.password = data[0].password;
                     _this.editForm.group = data[0].groups;
                 });
-
+                // 获取登录的用户名请求
+                $.get('/users/getusername', function (data) {
+                    _this.username = data;
+                });
             },
             methods: {
                 submitForm(formName) {

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- jquery.js -->
+    <script src="./libs/jQuery/jquery.js"></script>
+    <!-- vue.min.js -->
+    <script src="./libs/Vue/vue.min.js"></script>
+    <!-- elementUI.min.js -->
+    <script src="./libs/elementUI/js/elementUI.min.js"></script>
+    <!-- elementUI.min.css -->
+    <link rel="stylesheet" href="./libs/elementUI/css/elementUI.min.css">
+    <!-- index.css -->
+    <link rel="stylesheet" href="./styles/index.css">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="./styles/userAdd.css">
+    <!-- 根据cookie检测是否登录 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- 整体布局 -->
+            <el-container>
+                <!-- 右侧 -->
+                <el-container>
+                    <!-- 右侧头部 -->
+                    <el-header>
+                        <h2>欢迎您&emsp;{{username}}</h2>
+                        <p>你可以在这里添加新商品和编辑已有的商品。</p>
+                    </el-header>
+                    <el-main>
+                        <el-row>
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <h3>添加商品</h3>
+                                </div>
+                                <div class="userAdd">
+                                    <!-- 添加账号的表单 -->
+                                    <el-form :model="goodsForm" status-icon :rules="rules" ref="goodsForm" label-width="100px"
+                                        class="demo-goodsForm">
+                                        <el-form-item label="所属分类" prop="classify">
+                                            <el-select v-model="goodsForm.classify" placeholder="---选择分类---">
+                                                <el-option label="酒水类" value="酒水类"></el-option>
+                                                <el-option label="食品类" value="食品类"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="商品条形码" prop="barCode">
+                                            <el-input v-model="goodsForm.barCode"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="商品名称" prop="goodsName">
+                                            <el-input v-model="goodsForm.goodsName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="商品售价" prop="price">
+                                            <el-input v-model="goodsForm.price"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="市场价" prop="marketPrice">
+                                            <el-input v-model="goodsForm.marketPrice"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="商品进价" prop="enterPrice">
+                                            <el-input v-model="goodsForm.enterPrice"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="入库数量" prop="enterNumber">
+                                            <el-input v-model="goodsForm.enterNumber"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="商品重量" prop="weight">
+                                            <el-input v-model="goodsForm.weight"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="商品单位" prop="unit">
+                                            <el-input v-model="goodsForm.unit"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="会员优惠" prop="discounts">
+                                            <el-radio-group v-model="goodsForm.discounts">
+                                                <el-radio label="享受"></el-radio>
+                                                <el-radio label="不享受"></el-radio>
+                                            </el-radio-group>
+                                        </el-form-item>
+                                        <el-form-item label="是否促销" prop="promotion">
+                                            <el-radio-group v-model="goodsForm.promotion">
+                                                <el-radio label="启用"></el-radio>
+                                                <el-radio label="禁用"></el-radio>
+                                            </el-radio-group>
+                                        </el-form-item>
+                                        <el-form-item label="商品简介" prop="introduce">
+                                            <el-input type="textarea" v-model="goodsForm.introduce"></el-input>
+                                        </el-form-item>
+                                        <!-- 按钮 -->
+                                        <el-form-item>
+                                            <el-button type="primary" @click="submitForm('goodsForm')">添加</el-button>
+                                            <el-button @click="resetForm('goodsForm')">取消</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </el-card>
+                        </el-row>
+                    </el-main>
+                    <el-footer>
+                        <p>© Copyright 2018 华联超市管理系统</p>
+                    </el-footer>
+                </el-container>
+            </el-container>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    goodsForm: {
+                        classify: '',
+                        barCode: '',
+                        goodsName: '',
+                        price: '',
+                        marketPrice: '',
+                        enterPrice: '',
+                        enterNumber: '',
+                        weight: '',
+                        unit: '',
+                        discounts: '',
+                        promotion: '',
+                        introduce: ''
+                    },
+                    rules: {
+                        classify: [
+                            { required: true, message: '请选择商品分类', trigger: 'change' }
+                        ],
+                        barCode: [
+                            { required: true, message: '请输入商品条形码', trigger: 'blur' },
+                            { min: 5, max: 10, message: '长度在 5 到 10 个字符', trigger: 'blur' }
+                        ],
+                        goodsName: [
+                            { required: true, message: '请输入商品名称', trigger: 'blur' },
+                            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+                        ],
+                        price: [
+                            { required: true, message: '请选择商品售价', trigger: 'blur' }
+                        ],
+                    }
+                };
+            },
+            created() {
+                // 保留当前this
+                var _this = this;
+                $.get('/users/getusername', function (data) {
+                    _this.username = data;
+                });
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        // 发起请求的数据
+                        const goodsData = {
+                            classify: this.goodsForm.classify,
+                            barCode: this.goodsForm.barCode,
+                            goodsName: this.goodsForm.goodsName,
+                            price: this.goodsForm.price,
+                            marketPrice: this.goodsForm.marketPrice,
+                            enterPrice: this.goodsForm.enterPrice,
+                            enterNumber: this.goodsForm.enterNumber,
+                            weight: this.goodsForm.weight,
+                            unit: this.goodsForm.unit,
+                            discounts: this.goodsForm.discounts,
+                            promotion: this.goodsForm.promotion,
+                            introduce: this.goodsForm.introduce
+                        }
+                        if (valid) {
+                            // 发起ajax请求
+                            $.post('/goods/goodsadd', goodsData, function (data) {
+                                // 如果返回到数据的statusCode为1
+                                if (data.statusCode === 1) {
+                                    // 弹出成功提示信息
+                                    alert(data.msg);
+                                    // 跳转到账号管理页面
+                                    location.href = './goodsList.html';
+                                } else {
+                                    alert(data.msg);
+                                }
+                            });
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

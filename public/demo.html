@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,13 +15,30 @@
     <!-- 自定义css -->
     <link rel="stylesheet" href="./styles/index.css">
 </head>
+
 <body>
     <div id="app">
         <el-button type="success" plain>成功按钮</el-button>
     </div>
 
+    create table goods (
+        id int primary key auto_increment,
+        classify varchar(20),
+        barCode varchar(50),
+        goodsName varchar(50),
+        price float(8, 2),
+        marketPrice float(8, 2),
+        enterPrice float(8, 2),
+        enterNumber int,
+        weight varchar(30),
+        unit varchar(30),
+        discounts varchar(30),
+        promotion varchar(30),
+        introduce text
+    );
+
     <script>
-        new Vue ({
+        new Vue({
             el: '#app',
             data: {
 
@@ -28,4 +46,5 @@
         });
     </script>
 </body>
+
 </html>

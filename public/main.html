@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>测试</title>
+    <!-- jquery.js -->
+    <script src="./libs/jQuery/jquery.js"></script>
     <!-- vue.min.js -->
     <script src="./libs/Vue/vue.min.js"></script>
     <!-- elementUI.min.js -->
@@ -22,7 +24,7 @@
         <el-container>
             <!-- 右侧头部 -->
             <el-header>
-                <h2>欢迎您&emsp;admin</h2>
+                <h2>欢迎您&emsp;{{username}}</h2>
                 <p>查看系统的详细信息</p>
             </el-header>
             <el-main>
@@ -85,6 +87,7 @@
             el: '#app',
             data() {
                 return {
+                    username: '',
                     tableData: [{
                         date: '2016-05-02',
                         name: '王小虎',
@@ -103,6 +106,13 @@
                         address: '上海市普陀区金沙江路 1516 弄'
                     }]
                 }
+            },
+            created () {
+                // 保留当前this
+                var _this = this;
+                $.get('/users/getusername', function (data) {
+                    _this.username = data;
+                });
             }
         });
     </script>

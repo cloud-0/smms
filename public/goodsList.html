@@ -34,21 +34,42 @@
                     <!-- 右侧头部 -->
                     <el-header>
                         <h2>欢迎您&emsp;{{username}}</h2>
-                        <p>添加管理员账号</p>
+                        <p>查看和管理已有商品</p>
                     </el-header>
                     <el-main>
                         <el-row>
                             <el-card class="box-card">
                                 <div slot="header" class="clearfix">
-                                    <h3>添加管理员账号</h3>
+                                    <h3>商品管理</h3>
                                 </div>
+                                <el-form :inline="true" :model="selectForm" class="demo-form-inline">
+                                    <el-form-item label="选择分类">
+                                        <el-select v-model="selectForm.classify" placeholder="---选择分类---">
+                                            <el-option label="全部" value="全部"></el-option>
+                                            <el-option label="酒水类" value="酒水类"></el-option>
+                                            <el-option label="食品类" value="食品类"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="关键字">
+                                        <el-input v-model="selectForm.key" placeholder="商品名称，条形码"></el-input>
+                                    </el-form-item>
+                                    <el-form-item>
+                                        <el-button type="primary" @click="onSubmit">查询</el-button>
+                                    </el-form-item>
+                                </el-form>
                                 <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
                                     @selection-change="handleSelectionChange">
                                     <el-table-column type="selection">
                                     </el-table-column>
-                                    <el-table-column prop="username" label="用户名称">
+                                    <el-table-column prop="barCode" label="商品条形码">
                                     </el-table-column>
-                                    <el-table-column prop="groups" label="用户组" show-overflow-tooltip>
+                                    <el-table-column prop="goodsName" label="商品名称" show-overflow-tooltip>
+                                    </el-table-column>
+                                    <el-table-column prop="classify" label="所属分类">
+                                    </el-table-column>
+                                    <el-table-column prop="price" label="售价(元)">
+                                    </el-table-column>
+                                    <el-table-column prop="marketPrice" label="市场价(元)">
                                     </el-table-column>
                                     <el-table-column label="日期">
                                         <template slot-scope="scope">{{ scope.row.dates | formatDate }}</template>
@@ -61,14 +82,9 @@
                                     </el-table-column>
                                 </el-table>
                                 <div style="margin-top: 20px; text-align: left;">
-                                    <el-pagination 
-                                    @size-change="handleSizeChange" 
-                                    @current-change="handleCurrentChange"
-                                        :current-page="currentPage" 
-                                        :page-sizes="[1, 2, 5, 10, 20]" 
-                                        :page-size="pageSize"
-                                        layout="total, sizes, prev, pager, next, jumper" 
-                                        :total="totalData">
+                                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                        :current-page="currentPage" :page-sizes="[1, 2, 5, 10, 20]" :page-size="pageSize"
+                                        layout="total, sizes, prev, pager, next, jumper" :total="totalData">
                                     </el-pagination>
                                 </div>
                                 <div style="margin-top: 20px; text-align: left;">
@@ -98,7 +114,11 @@
                     multipleSelection: [],
                     pageSize: 2,
                     currentPage: 1,
-                    totalData: 1
+                    totalData: 1,
+                    selectForm: {
+                        classify: '',
+                        key: ''
+                    }
                 }
             },
             // 生命周期
@@ -119,11 +139,13 @@
                     var _this = this;
                     // 获取到当前页码和每页显示数据量的字段
                     const pagingData = {
-                        pageSize : this.pageSize,
-                        currentPage : this.currentPage
+                        pageSize: this.pageSize,
+                        currentPage: this.currentPage,
+                        "classify": this.selectForm.classify,
+                        "key": this.selectForm.key
                     }
                     // 在挂载dom之前发起ajax请求(刷新页面)
-                    $.get('/users/userList', pagingData, function (data) {
+                    $.get('/goods/goodslist', pagingData, function (data) {
 
                         // 当页面数据为空时，返回到上一页，再次请求数据，并且页码不能为1
                         if (!data.pageData.length && _this.currentPage > 1) {
@@ -139,18 +161,18 @@
                         _this.tableData = data.pageData;
                     });
                 },
-                
+
                 // 修改数据
                 handleEdit(id) {
                     // 跳转到修改用户账号页面并传递一个id
-                    location.href = `./userEdit.html?id=${id}`;
+                    location.href = `./goodsEdit.html?id=${id}`;
                 },
-                
+
                 // 单条数据删除
                 handleDelete(id) {
                     // 保留当前this
                     var _this = this;
-                    $.get(`/users/userDelOne?id=${id}`, function (data) {
+                    $.get(`/goods/goodsDelOne?id=${id}`, function (data) {
                         if (data.statusCode === 1) {
                             // 如果数据对象状态码为1，弹出成功
                             alert(data.msg);
@@ -162,7 +184,7 @@
                         }
                     });
                 },
-                
+
                 // 批量删除
                 batchDel() {
                     // 遍历选中的数据对象数组，返回一个id数组
@@ -170,14 +192,14 @@
                     // 没有选择的情况下点击批量删除
                     if (!idArr.length) {
                         // 弹出提示信息
-                        alert('请至少选择一个账号！');
+                        alert('请至少选择一件商品！');
                         // 阻止后面程序执行
                         return;
                     }
                     // 保留当前this
                     var _this = this;
                     // 发起ajax请求,把id数组作为数据传给后台
-                    $.get('/users/batchDel', { idArr }, function (data) {
+                    $.get('/goods/batchDel', { idArr }, function (data) {
                         if (data.statusCode === 1) {
                             // 弹出成功的提示
                             alert(data.msg);
@@ -195,12 +217,12 @@
                     // 获取到选中的数据对象数组
                     this.multipleSelection = val;
                 },
-                
+
                 // 取消选中
                 cancelSelection() {
                     this.$refs.multipleTable.clearSelection();
                 },
-                
+
                 // 每页显示数据的数量改变时触发
                 handleSizeChange(val) {
                     // 每次改变时的值赋值给pageSize
@@ -208,12 +230,17 @@
                     // 每次改变每页显示数量的数量时请求一次数据（更新页面）
                     this.getAllData();
                 },
-                
+
                 // 当前页码改变时触发
                 handleCurrentChange(val) {
                     // 每次改变时把值赋值给currentPage
                     this.currentPage = val;
                     // 每当页码改变时就请求一次数据（更新页面）
+                    this.getAllData();
+                },
+
+                // 查询表单的提交
+                onSubmit() {
                     this.getAllData();
                 }
             },

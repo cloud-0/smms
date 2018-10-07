@@ -45,6 +45,14 @@ router.get('/checkIsLogin', (req, res) => {
   }
 });
 
+/* 响应获取用户名请求 */
+router.get('/getusername', (req, res) => {
+  // 获取登录后浏览器中cookie的username
+  let username = req.cookies.username;
+  // 将获取到的用户名响应给前端
+  res.send(username);
+}); 
+
 /* 响应原密码验证的请求 */
 router.post('/checkoldpwd', (req, res) => {
   // 接收前端数据（输入的原密码）
